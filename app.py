@@ -20,6 +20,10 @@ gc = gspread.authorize(creds)
 SPREADSHEET_ID = "1pr8y98ZEeA3LXEg59e-QYRbYec9F8fJAzCHVNZXiQ1k"
 sheet = gc.open_by_key(SPREADSHEET_ID).sheet1
 
+# === CSS SETUP ===
+st.set_page_config(...)
+st.markdown("...CSS...", unsafe_allow_html=True)
+
 # --------- FUNGSI-FUNGSI PENGOLAHAN DATA --------------
 
 def get_data():
@@ -77,6 +81,61 @@ st.title("📚 Dashboard Kebiasaan Belajar Mahasiswa")
 
 menu = st.sidebar.selectbox("Menu", ["Lihat Data", "Tambah Data", "Edit Data", "Hapus Data", "Visualisasi"])
 df = get_data()
+df["JamBelajarFloat"] = df["Jam Belajar"].astype(str).apply(parse_jam_belajar)
+
+## === UI MODERN ===
+# === HEADER DASHBOARD ===
+st.markdown("<h1 style='text-align: center;'>📚 Dashboard Kebiasaan Belajar Mahasiswa</h1>", unsafe_allow_html=True)
+st.markdown("#### 🎯 <span style='color:#6C5B7B'>Data & Insight Kebiasaan Belajar</span>", unsafe_allow_html=True)
+st.markdown("---")
+
+# === STATISTIK CEPAT (Cards) ===
+col1, col2, col3 = st.columns(3)
+col1.metric("👥 Jumlah Siswa", df["Nama"].nunique())
+col2.metric("📅 Jumlah Hari", df["Tanggal"].nunique())
+col3.metric("⏰ Total Jam Belajar", f"{df['JamBelajarFloat'].sum():.1f} jam")
+
+st.markdown("---")
+
+# === TABEL DATA UTAMA ===
+st.markdown("### 🗂️ Data Tabel")
+st.dataframe(df.drop(columns=["JamBelajarFloat"]).reset_index(drop=True), use_container_width=True)
+
+st.markdown("---")
+
+# === VISUALISASI ALTAR MODERN ===
+st.markdown("### 📈 Grafik Line Total Jam Belajar per Tanggal")
+line_chart = alt.Chart(df).mark_line(point=alt.OverlayMarkDef(color="#6C5B7B")).encode(
+    x=alt.X('Tanggal:T', title='Tanggal'),
+    y=alt.Y('JamBelajarFloat:Q', title='Total Jam Belajar (jam)'),
+    tooltip=['Tanggal', alt.Tooltip('JamBelajarFloat', format=".2f")]
+).properties(width=900, height=350)
+st.altair_chart(line_chart, use_container_width=True)
+
+st.markdown("### 🎨 Pie Chart Distribusi Materi")
+materi_counts = df["Materi"].value_counts().reset_index()
+materi_counts.columns = ["Materi", "Jumlah"]
+pie = alt.Chart(materi_counts).mark_arc(innerRadius=60).encode(
+    theta=alt.Theta(field="Jumlah", type="quantitative"),
+    color=alt.Color(field="Materi", type="nominal"),
+    tooltip=["Materi", "Jumlah"]
+)
+st.altair_chart(pie, use_container_width=True)
+
+# === BONUS: Visualisasi Suasana ===
+st.markdown("### 👥 Distribusi Suasana Belajar")
+suasana_counts = df["Suasana"].value_counts().reset_index()
+suasana_counts.columns = ["Suasana", "Jumlah"]
+bar = alt.Chart(suasana_counts).mark_bar(size=50, cornerRadiusTopLeft=10, cornerRadiusTopRight=10).encode(
+    x=alt.X('Suasana', sort=None),
+    y='Jumlah',
+    color='Suasana',
+    tooltip=['Suasana', 'Jumlah']
+)
+st.altair_chart(bar, use_container_width=True)
+
+st.markdown("---")
+st.markdown("<center><sub>Made with 💜 by Em Rayi </sub></center>", unsafe_allow_html=True)
 
 if menu == "Lihat Data":
     st.subheader("Data Kebiasaan Belajar")
