@@ -69,8 +69,6 @@ def split_jam_menit(jam_belajar_str):
             menit = int(match.group(1))
     return jam, menit
 
-df["JamBelajarFloat"] = df["Jam Belajar"].astype(str).apply(parse_jam_belajar)
-
 # ---------------- STREAMLIT UI -----------------------
 
 st.set_page_config(page_title="Dashboard Kebiasaan Belajar", layout="wide")
