@@ -109,7 +109,7 @@ elif menu == "Tambah Data":
         # Konversi tanggal ke string (ISO)
         tanggal_str = tanggal.strftime('%Y-%m-%d') if isinstance(tanggal, date) else str(tanggal)
         new_row = [
-            int(new_id),
+            int(id),
             str(nama),
             tanggal_str,
             jam_belajar_str,
