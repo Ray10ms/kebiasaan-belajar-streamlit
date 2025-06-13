@@ -21,8 +21,22 @@ SPREADSHEET_ID = "1pr8y98ZEeA3LXEg59e-QYRbYec9F8fJAzCHVNZXiQ1k"
 sheet = gc.open_by_key(SPREADSHEET_ID).sheet1
 
 # === CSS SETUP ===
-st.set_page_config(...)
-st.markdown("...CSS...", unsafe_allow_html=True)
+st.set_page_config(page_title="Dashboard Kebiasaan Belajar", page_icon="📚", layout="wide")
+st.markdown("""
+    <style>
+    .main { background-color: #f4f6fb; }
+    .stButton > button {
+        background: linear-gradient(90deg, #355C7D 0%, #6C5B7B 100%);
+        color: white; font-weight: bold; border-radius: 8px; border: none;
+        padding: 0.5em 2em; margin-bottom: 1em;
+    }
+    .stDataFrame { border-radius: 10px; overflow: hidden; }
+    h1, h2, h3, h4 { font-family: 'Montserrat', sans-serif; }
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    </style>
+""", unsafe_allow_html=True)
+
 
 # --------- FUNGSI-FUNGSI PENGOLAHAN DATA --------------
 
