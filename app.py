@@ -4,6 +4,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 import time
 import re
+from datetime import date
 
 # ------------- KONEKSI KE GOOGLE SHEETS -------------
 SCOPE = [
@@ -93,21 +94,28 @@ elif menu == "Tambah Data":
     if st.button("Tambah"):
         if not nama:
             st.warning("Nama tidak boleh kosong!")
-    elif jam == 0 and menit == 0:
-        st.warning("Minimal harus isi jam atau menit!")
-    else:
-
-        if jam > 0 and menit > 0:
-            jam_belajar_str = f"{int(jam)} jam {int(menit)} menit"
-        elif jam > 0:
-            jam_belajar_str = f"{int(jam)} jam"
-        elif menit > 0:
-            jam_belajar_str = f"{int(menit)} menit"
+        elif jam == 0 and menit == 0:
+            st.warning("Minimal harus isi jam atau menit!")
         else:
-            jam_belajar_str = "0 menit"
-
-        new_id = (df["ID"].astype(int).max() + 1) if not df.empty else 1
-        new_row = [new_id, nama, str(tanggal), jam_belajar_str, materi, suasana]
+            if jam > 0 and menit > 0:
+                jam_belajar_str = f"{int(jam)} jam {int(menit)} menit"
+            elif jam > 0:
+                jam_belajar_str = f"{int(jam)} jam"
+            elif menit > 0:
+                jam_belajar_str = f"{int(menit)} menit"
+            else:
+                jam_belajar_str = "0 menit"
+        
+        # Konversi tanggal ke string (ISO)
+        tanggal_str = tanggal.strftime('%Y-%m-%d') if isinstance(tanggal, date) else str(tanggal)
+        new_row = [
+            int(new_id),
+            str(nama),
+            tanggal_str,
+            jam_belajar_str,
+            str(materi),
+            str(suasana)
+        ]
         add_data(new_row)
         st.success("Data berhasil ditambahkan!")
         time.sleep(2)
