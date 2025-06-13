@@ -75,7 +75,7 @@ elif menu == "Tambah Data":
             new_row = [new_id, nama, str(tanggal), jam_belajar, materi, suasana]
             add_data(new_row)
             st.success("Data berhasil ditambahkan!")
-            st.experimental_rerun()
+            st.rerun()
 
 elif menu == "Edit Data":
     st.subheader("Edit Data")
@@ -91,7 +91,7 @@ elif menu == "Edit Data":
             new_row = [selected_id, nama, str(tanggal), jam_belajar, materi, suasana]
             update_data(selected_id, new_row)
             st.success("Data berhasil diupdate!")
-            st.experimental_rerun()
+            st.rerun()
     else:
         st.info("Data masih kosong.")
 
@@ -102,7 +102,7 @@ elif menu == "Hapus Data":
         if st.button("Hapus"):
             delete_data(selected_id)
             st.success("Data berhasil dihapus!")
-            st.experimental_rerun()
+            st.rerun()
     else:
         st.info("Data masih kosong.")
 
