@@ -189,7 +189,7 @@ elif menu == "Hapus Data":
 elif menu == "Visualisasi":
     st.subheader("Visualisasi Data Kebiasaan Belajar")
     if not df.empty:
-        df["JamBelajarFloat"] = df["JamBelajarFloat"].astype(str).apply(parse_jam_belajar)
+        df["JamBelajarFloat"] = df["Jam Belajar"].astype(str).apply(parse_jam_belajar)
         st.write("Total Jam Belajar per Tanggal:")
         st.line_chart(df.groupby("Tanggal")["JamBelajarFloat"].sum())
 
