@@ -99,7 +99,7 @@ elif menu == "Tambah Data":
     elif jam == 0 and menit == 0:
         st.warning("Minimal harus isi jam atau menit!")
     else:
-        # Gabungkan jam & menit jadi string
+
         if jam > 0 and menit > 0:
             jam_belajar_str = f"{int(jam)} jam {int(menit)} menit"
         elif jam > 0:
