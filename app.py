@@ -91,48 +91,45 @@ elif menu == "Tambah Data":
     materi = st.selectbox("Materi", ["Matematika", "Fisika", "Kimia", "Biologi", "Bahasa Inggris"])
     suasana = st.selectbox("Suasana", ["Sendiri", "Berkelompok"])
 
-if st.button("Tambah"):
-    if not nama:
-        st.warning("Nama tidak boleh kosong!")
-    elif jam == 0 and menit == 0:
-        st.warning("Minimal harus isi jam atau menit!")
-    else:
-        if jam > 0 and menit > 0:
-            jam_belajar_str = f"{int(jam)} jam {int(menit)} menit"
-        elif jam > 0:
-            jam_belajar_str = f"{int(jam)} jam"
-        elif menit > 0:
-            jam_belajar_str = f"{int(menit)} menit"
+    if st.button("Tambah"):
+        if not nama:
+            st.warning("Nama tidak boleh kosong!")
+        elif jam == 0 and menit == 0:
+            st.warning("Minimal harus isi jam atau menit!")
         else:
-            jam_belajar_str = "0 menit"
+            if jam > 0 and menit > 0:
+                jam_belajar_str = f"{int(jam)} jam {int(menit)} menit"
+            elif jam > 0:
+                jam_belajar_str = f"{int(jam)} jam"
+            elif menit > 0:
+                jam_belajar_str = f"{int(menit)} menit"
+            else:
+                jam_belajar_str = "0 menit"
 
-        # Konversi tanggal ke string
-        tanggal_str = tanggal.strftime('%Y-%m-%d') if hasattr(tanggal, 'strftime') else str(tanggal)
-        
-        # INISIALISASI ID
-        if "ID" in df.columns and not df.empty:
-            try:
-                new_id = int(df["ID"].astype(int).max()) + 1
-            except Exception:
+            tanggal_str = tanggal.strftime('%Y-%m-%d') if hasattr(tanggal, 'strftime') else str(tanggal)
+            
+            if "ID" in df.columns and not df.empty:
+                try:
+                    new_id = int(df["ID"].astype(int).max()) + 1
+                except Exception:
+                    new_id = 1
+            else:
                 new_id = 1
-        else:
-            new_id = 1
 
-        st.write(f"ID Baru: {new_id}")  # Debug
-        
-        new_row = [
-            int(new_id),
-            str(nama),
-            tanggal_str,
-            jam_belajar_str,
-            str(materi),
-            str(suasana)
-        ]
-        add_data(new_row)
-        st.success("Data berhasil ditambahkan!")
-        time.sleep(2)
-        st.rerun()
-
+            st.write(f"ID Baru: {new_id}")  # Debug
+            
+            new_row = [
+                int(new_id),
+                str(nama),
+                tanggal_str,
+                jam_belajar_str,
+                str(materi),
+                str(suasana)
+            ]
+            add_data(new_row)
+            st.success("Data berhasil ditambahkan!")
+            time.sleep(2)
+            st.rerun()
 elif menu == "Edit Data":
     st.subheader("Edit Data")
     if not df.empty:
