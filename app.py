@@ -117,7 +117,7 @@ elif menu == "Tambah Data":
             else:
                 new_id = 1
 
-            st.write(f"ID Baru: {new_id}")  # Debug
+            st.write(f"ID Baru: {new_id}")
             
             new_row = [
                 int(new_id),
@@ -180,8 +180,8 @@ elif menu == "Hapus Data":
         if st.button("Hapus"):
             delete_data(selected_id)
             st.success("Data berhasil dihapus!")
-            time.sleep(5)    # Tampilkan notifikasi selama 2 detik
-            st.rerun()       # Refresh halaman setelah itu
+            time.sleep(5)    # Tampilkan notifikasi selama 5 detik
+            st.rerun()       # Refresh halaman
     else:
         st.info("Data masih kosong.")
 
@@ -189,7 +189,7 @@ elif menu == "Hapus Data":
 elif menu == "Visualisasi":
     st.subheader("Visualisasi Data Kebiasaan Belajar")
     if not df.empty:
-        df["JamBelajarFloat"] = df["Jam Belajar"].astype(str).apply(parse_jam_belajar)
+        df["JamBelajarFloat"] = df["JamBelajarFloat"].astype(str).apply(parse_jam_belajar)
         st.write("Total Jam Belajar per Tanggal:")
         st.line_chart(df.groupby("Tanggal")["JamBelajarFloat"].sum())
 
