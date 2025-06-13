@@ -3,6 +3,7 @@ import pandas as pd
 import gspread
 from google.oauth2.service_account import Credentials
 import time
+import re
 
 # ------------- KONEKSI KE GOOGLE SHEETS -------------
 SCOPE = [
@@ -43,6 +44,33 @@ def delete_data(id_to_delete):
             sheet.delete_rows(i+1)
             return True
     return False
+def parse_jam_belajar(s):
+    # Regex ambil angka dari "X jam Y menit"
+    jam = 0
+    menit = 0
+    if "jam" in s:
+        match = re.search(r'(\d+)\s*jam', s)
+        if match:
+            jam = int(match.group(1))
+    if "menit" in s:
+        match = re.search(r'(\d+)\s*menit', s)
+        if match:
+            menit = int(match.group(1))
+    return jam + menit / 60
+def split_jam_menit(jam_belajar_str):
+    jam = 0
+    menit = 0
+    if "jam" in jam_belajar_str:
+        match = re.search(r'(\d+)\s*jam', jam_belajar_str)
+        if match:
+            jam = int(match.group(1))
+    if "menit" in jam_belajar_str:
+        match = re.search(r'(\d+)\s*menit', jam_belajar_str)
+        if match:
+            menit = int(match.group(1))
+    return jam, menit
+
+df["JamBelajarFloat"] = df["Jam Belajar"].astype(str).apply(parse_jam_belajar)
 
 # ---------------- STREAMLIT UI -----------------------
 
@@ -60,24 +88,33 @@ elif menu == "Tambah Data":
     st.subheader("Tambah Data Baru")
     nama = st.text_input("Nama")
     tanggal = st.date_input("Tanggal")
-    jam_belajar = st.number_input("Jam Belajar", min_value=0.5, step=0.5)
+    jam = st.number_input("Jam", min_value=0, max_value=12, step=1)
+    menit = st.number_input("Menit", min_value=0, max_value=59, step=1)
     materi = st.selectbox("Materi", ["Matematika", "Fisika", "Kimia", "Biologi", "Bahasa Inggris"])
     suasana = st.selectbox("Suasana", ["Sendiri", "Berkelompok"])
 
     if st.button("Tambah"):
         if not nama:
             st.warning("Nama tidak boleh kosong!")
+    elif jam == 0 and menit == 0:
+        st.warning("Minimal harus isi jam atau menit!")
+    else:
+        # Gabungkan jam & menit jadi string
+        if jam > 0 and menit > 0:
+            jam_belajar_str = f"{int(jam)} jam {int(menit)} menit"
+        elif jam > 0:
+            jam_belajar_str = f"{int(jam)} jam"
+        elif menit > 0:
+            jam_belajar_str = f"{int(menit)} menit"
         else:
-            # Generate ID baru
-            if not df.empty:
-                new_id = int(df["ID"].max()) + 1
-            else:
-                new_id = 1
-            new_row = [new_id, nama, str(tanggal), jam_belajar, materi, suasana]
-            add_data(new_row)
-            st.success("Data berhasil ditambahkan!")
-            time.sleep(5)
-            st.rerun()
+            jam_belajar_str = "0 menit"
+
+        new_id = (df["ID"].astype(int).max() + 1) if not df.empty else 1
+        new_row = [new_id, nama, str(tanggal), jam_belajar_str, materi, suasana]
+        add_data(new_row)
+        st.success("Data berhasil ditambahkan!")
+        time.sleep(2)
+        st.rerun()
 
 elif menu == "Edit Data":
     st.subheader("Edit Data")
@@ -86,15 +123,38 @@ elif menu == "Edit Data":
         row = df[df["ID"] == selected_id].iloc[0]
         nama = st.text_input("Nama", row["Nama"])
         tanggal = st.date_input("Tanggal", pd.to_datetime(row["Tanggal"]))
-        jam_belajar = st.number_input("Jam Belajar", min_value=0.5, value=float(row["Jam Belajar"]), step=0.5)
-        materi = st.selectbox("Materi", ["Matematika", "Fisika", "Kimia", "Biologi", "Bahasa Inggris"], index=["Matematika", "Fisika", "Kimia", "Biologi", "Bahasa Inggris"].index(row["Materi"]))
-        suasana = st.selectbox("Suasana", ["Sendiri", "Berkelompok"], index=["Sendiri", "Berkelompok"].index(row["Suasana"]))
+
+        # Ambil jam & menit dari string di kolom 'Jam Belajar'
+        jam_lama, menit_lama = split_jam_menit(str(row["Jam Belajar"]))
+
+        jam = st.number_input("Jam", min_value=0, max_value=12, step=1, value=jam_lama)
+        menit = st.number_input("Menit", min_value=0, max_value=59, step=1, value=menit_lama)
+        materi = st.selectbox("Materi", ["Matematika", "Fisika", "Kimia", "Biologi", "Bahasa Inggris"],
+                              index=["Matematika", "Fisika", "Kimia", "Biologi", "Bahasa Inggris"].index(row["Materi"]))
+        suasana = st.selectbox("Suasana", ["Sendiri", "Berkelompok"],
+                               index=["Sendiri", "Berkelompok"].index(row["Suasana"]))
+
         if st.button("Update"):
-            new_row = [selected_id, nama, str(tanggal), jam_belajar, materi, suasana]
-            update_data(selected_id, new_row)
-            st.success("Data berhasil diupdate!")
-            time.sleep(5)
-            st.rerun()
+            if not nama:
+                st.warning("Nama tidak boleh kosong!")
+            elif jam == 0 and menit == 0:
+                st.warning("Minimal harus isi jam atau menit!")
+            else:
+                # Gabungkan jam & menit jadi string
+                if jam > 0 and menit > 0:
+                    jam_belajar_str = f"{int(jam)} jam {int(menit)} menit"
+                elif jam > 0:
+                    jam_belajar_str = f"{int(jam)} jam"
+                elif menit > 0:
+                    jam_belajar_str = f"{int(menit)} menit"
+                else:
+                    jam_belajar_str = "0 menit"
+
+                new_row = [selected_id, nama, str(tanggal), jam_belajar_str, materi, suasana]
+                update_data(selected_id, new_row)
+                st.success("Data berhasil diupdate!")
+                time.sleep(2)
+                st.rerun()
     else:
         st.info("Data masih kosong.")
 
