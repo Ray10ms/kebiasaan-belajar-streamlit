@@ -80,7 +80,8 @@ df = get_data()
 
 if menu == "Lihat Data":
     st.subheader("Data Kebiasaan Belajar")
-    st.dataframe(df)
+    st.dataframe(df.reset_index(drop=True))
+
 
 elif menu == "Tambah Data":
     st.subheader("Tambah Data Baru")
@@ -190,13 +191,13 @@ elif menu == "Visualisasi":
     if not df.empty:
         df["JamBelajarFloat"] = df["Jam Belajar"].astype(str).apply(parse_jam_belajar)
         st.write("Total Jam Belajar per Tanggal:")
-        st.bar_chart(df.groupby("Tanggal")["Jam Belajar"].sum())
+        st.line_chart(df.groupby("Tanggal")["Jam Belajar"].sum())
 
         st.write("Distribusi Materi:")
-        st.bar_chart(df["Materi"].value_counts())
+        st.line_chart(df["Materi"].value_counts())
 
         st.write("Suasana Belajar:")
-        st.bar_chart(df["Suasana"].value_counts())
+        st.line_chart(df["Suasana"].value_counts())
     else:
         st.info("Data belum ada, silakan tambah data dulu.")
 
