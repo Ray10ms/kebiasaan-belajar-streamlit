@@ -13,7 +13,7 @@ SCOPE = [
 creds = Credentials.from_service_account_info(st.secrets["GCP_SERVICE_ACCOUNT"], scopes=SCOPE)
 gc = gspread.authorize(creds)
 
-# Ganti dengan ID spreadsheet kamu (contoh: '1x2y3zA4B5C6D7E8F9G0H...')
+#ID spreadsheet
 SPREADSHEET_ID = "1pr8y98ZEeA3LXEg59e-QYRbYec9F8fJAzCHVNZXiQ1k"
 sheet = gc.open_by_key(SPREADSHEET_ID).sheet1
 
@@ -30,7 +30,7 @@ def add_data(row):
 def update_data(id_to_update, new_row):
     all_values = sheet.get_all_values()
     for i, row in enumerate(all_values):
-        if str(row[0]) == str(id_to_update):  # Cek ID (kolom pertama)
+        if str(row[0]) == str(id_to_update):  # Cek ID 
             sheet.update(f'A{i+1}:F{i+1}', [new_row])
             return True
     return False
