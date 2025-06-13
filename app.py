@@ -45,7 +45,6 @@ def delete_data(id_to_delete):
             return True
     return False
 def parse_jam_belajar(s):
-    # Regex ambil angka dari "X jam Y menit"
     jam = 0
     menit = 0
     if "jam" in s:
