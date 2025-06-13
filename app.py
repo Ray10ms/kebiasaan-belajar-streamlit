@@ -191,7 +191,7 @@ elif menu == "Visualisasi":
     if not df.empty:
         df["JamBelajarFloat"] = df["Jam Belajar"].astype(str).apply(parse_jam_belajar)
         st.write("Total Jam Belajar per Tanggal:")
-        st.line_chart(df.groupby("Tanggal")["Jam Belajar"].sum())
+        st.line_chart(df.groupby("Tanggal")["JamBelajarFloat"].sum())
 
         st.write("Distribusi Materi:")
         st.line_chart(df["Materi"].value_counts())
