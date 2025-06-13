@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import gspread
 from google.oauth2.service_account import Credentials
+import time
 
 # ------------- KONEKSI KE GOOGLE SHEETS -------------
 SCOPE = [
@@ -75,6 +76,7 @@ elif menu == "Tambah Data":
             new_row = [new_id, nama, str(tanggal), jam_belajar, materi, suasana]
             add_data(new_row)
             st.success("Data berhasil ditambahkan!")
+            time.sleep(5)
             st.rerun()
 
 elif menu == "Edit Data":
@@ -91,6 +93,7 @@ elif menu == "Edit Data":
             new_row = [selected_id, nama, str(tanggal), jam_belajar, materi, suasana]
             update_data(selected_id, new_row)
             st.success("Data berhasil diupdate!")
+            time.sleep(5)
             st.rerun()
     else:
         st.info("Data masih kosong.")
@@ -102,9 +105,11 @@ elif menu == "Hapus Data":
         if st.button("Hapus"):
             delete_data(selected_id)
             st.success("Data berhasil dihapus!")
-            st.rerun()
+            time.sleep(5)    # Tampilkan notifikasi selama 2 detik
+            st.rerun()       # Refresh halaman setelah itu
     else:
         st.info("Data masih kosong.")
+
 
 elif menu == "Visualisasi":
     st.subheader("Visualisasi Data Kebiasaan Belajar")
